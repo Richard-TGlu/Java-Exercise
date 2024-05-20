@@ -2,13 +2,14 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class TeamDAO {
-    private static final String url = "jdbc:mysql://localhost:3306/BasketBallDB?serverTimezone=UTC";
-    private static final String user = "root"; 
+    private static final String url = "jdbc:mysql://34.80.246.158:3306/basketball?serverTimezone=UTC";
+    private static final String user = "CSEbasketball";     
     private static final String password = "junqi525";
-
+    
+    //增加球隊
     public void addTeam(String teamName, String teamCity, int foundationYear) {
         try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO teams (name, city, foundation_year) VALUES (?, ?, ?)")) { 
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Teams (name, city, foundation_year) VALUES (?, ?, ?)")) { 
             stmt.setString(1, teamName);
             stmt.setString(2, teamCity);
             stmt.setInt(3, foundationYear);
@@ -18,11 +19,12 @@ public class TeamDAO {
         }
     }
 
+    //刪除球隊
     public void deleteTeam(String teamName){
         TeamDAO teamDAO = new TeamDAO();
         int team_id = teamDAO.getTeamIdByName(teamName);
         try (Connection conn = DriverManager.getConnection(url, user, password);
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM teams Where team_id = ?")) { 
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM Teams Where team_id = ?")) { 
             stmt.setInt(1, team_id);
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -35,10 +37,11 @@ public class TeamDAO {
         }
     }
     
+    //透過team_id來搜尋球隊
     public Team getTeamInfo(int team_id) {
         Team team = null;
         try (Connection conn = DriverManager.getConnection(url, user, password);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams WHERE team_id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Teams WHERE team_id = ?")) {
             stmt.setInt(1, team_id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -53,11 +56,12 @@ public class TeamDAO {
         }
         return team;
     }
-
+    
+    //返回一個所有球隊資料的ArrayList
     public ArrayList<Team> getAllTeams() {
         ArrayList<Team> teamList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Team team = new Team();
@@ -73,10 +77,11 @@ public class TeamDAO {
         return teamList;
     }
 
+    //透過Team Name獲取team_id
     public int getTeamIdByName(String teamName) {
         int team_id = -1;
         try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams WHERE name = ?")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Teams WHERE name = ?")) {
             stmt.setString(1, teamName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
