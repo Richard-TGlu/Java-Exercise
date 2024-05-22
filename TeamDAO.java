@@ -61,7 +61,7 @@ public class TeamDAO {
     public ArrayList<Team> getAllTeams() {
         ArrayList<Team> teamList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM teams")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Teams")) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Team team = new Team();
@@ -91,5 +91,13 @@ public class TeamDAO {
             e.printStackTrace();
         }
         return team_id;
+    }
+    ublic static void main(String[] args) {
+        TeamDAO teamDAO = new TeamDAO();
+        ArrayList<Team> teamlist = teamDAO.getAllTeams();
+        for (Team team : teamlist) {
+            System.out.println(team.toString());
+        }
+
     }
 }
