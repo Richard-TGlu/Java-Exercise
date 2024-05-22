@@ -41,8 +41,12 @@ public class Player {
         this.number = number;
     }
 
-    public Position getPosition(){
-        return this.position;
+    public String getPosition(){
+        if(position == Position.PG) return "PG";
+        else if(position == Position.SG) return "SG";
+        else if(position == Position.SF) return "SF";
+        else if(position == Position.PF) return "PF";
+        else return "C";
     }
     
     public void setPosition(String positionCode){
