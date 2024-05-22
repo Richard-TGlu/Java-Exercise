@@ -7,11 +7,16 @@ import java.util.ArrayList;
 public class ManageTeam extends JPanel {
     
     private MainMenu mainMenu;
+    private CardLayout cardLayout;
+    private JPanel teamListPanel;
     private ArrayList<Team> teams;
 
     public ManageTeam(MainMenu mainMenu) {
-        setLayout(new BorderLayout());
+        this.mainMenu = mainMenu;
+        cardLayout = new CardLayout();
+        setLayout(cardLayout);
 
+        teamListPanel = new JPanel(new BorderLayout());
         // 設定標題
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BorderLayout());
@@ -25,11 +30,11 @@ public class ManageTeam extends JPanel {
                 mainMenu.showMenu();
             }
         });
-        JLabel titleLabel = new JLabel("球隊列表", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("所有球隊列表", JLabel.CENTER);
         titleLabel.setFont(new Font("標楷體", Font.BOLD, 40));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
-        // 創建球隊按鈕面板
+        //創建球隊按鈕面板
         JPanel teamsButtonPanel = new JPanel();
         teamsButtonPanel.setLayout(new GridLayout(10, 2, 10, 50));
         teamsButtonPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 20, 50));
@@ -47,24 +52,37 @@ public class ManageTeam extends JPanel {
             }
         });
 
-        // 獲取所有球隊並創建按鈕
+
+        //獲取所有球隊並創建按鈕
         TeamDAO teamDAO = new TeamDAO();
         teams = teamDAO.getAllTeams();
         Font buttonFont = new Font("Serif", Font.PLAIN,30);
 
         for (Team team : teams) {
+            ManagePlayer playerListPanel = new ManagePlayer(team, this);
+            add(playerListPanel, team.getName());
             JButton teamButton = new JButton(team.getCity() + "  " + team.getName());
             teamButton.setFont(buttonFont);
             teamsButtonPanel.add(teamButton);
+            
+            teamButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    showPlayerList(team);
+                }
+            });
         }
 
-        MenuPanel.add(backToMenu, BorderLayout.WEST);
+        MenuPanel.add(backToMenu, BorderLayout.EAST);
         titlePanel.add(MenuPanel, BorderLayout.SOUTH);
         titlePanel.add(titleLabel, BorderLayout.CENTER);
-        // 設定框架的Layout
-        add(titlePanel, BorderLayout.NORTH);
-        add(new JScrollPane(teamsButtonPanel), BorderLayout.CENTER);
-        add(createTeam, BorderLayout.SOUTH);
+        
+        teamListPanel.add(titlePanel, BorderLayout.NORTH);
+        teamListPanel.add(new JScrollPane(teamsButtonPanel), BorderLayout.CENTER);
+        teamListPanel.add(createTeam, BorderLayout.SOUTH);
+
+        add(teamListPanel, "teamList");
+
+        showTeamList();
     }
 
     //CreateTeam頁面
@@ -134,5 +152,12 @@ public class ManageTeam extends JPanel {
         repaint();
         // 重新初始化介面
         new ManageTeam(mainMenu);
+    }
+
+    public void showTeamList() {
+        cardLayout.show(this, "teamList");
+    }
+    public void showPlayerList(Team team){
+        cardLayout.show(this, team.getName());
     }
 }
