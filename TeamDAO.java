@@ -92,7 +92,7 @@ public class TeamDAO {
         }
         return team_id;
     }
-    ublic static void main(String[] args) {
+    public static void main(String[] args) {
         TeamDAO teamDAO = new TeamDAO();
         ArrayList<Team> teamlist = teamDAO.getAllTeams();
         for (Team team : teamlist) {
