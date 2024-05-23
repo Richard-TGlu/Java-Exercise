@@ -24,6 +24,17 @@ public class PlayerDAO {
         }
     }
     
+    public void deletePlayer(int player_id){
+        try{
+            Connection conn = DriverManager.getConnection(url, user, password);
+            PreparedStatement deleteTeamStmt = conn.prepareStatement("DELETE FROM Players Where player_id = ?");
+            deleteTeamStmt.setInt(1, player_id);
+            deleteTeamStmt.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
     public ArrayList<Player> getTeamPlayers(int team_id){
         ArrayList<Player> playerList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password);
@@ -49,15 +60,11 @@ public class PlayerDAO {
         return playerList;
     }
 
+    
+
     public static void main(String[] args){
-        TeamDAO teamDAO = new TeamDAO();
-        PlayerDAO playerDAO = new PlayerDAO();
-        ArrayList<Player> playerList;
-        //playerDAO.addPlayer("Lakers", "Lebron James", 23, Player.Position.PF, 39, 206, 113);
-        //playerDAO.addPlayer("Lakers", "Anthony Davis", 3, Player.Position.C, 31, 208, 115);
-        playerList = playerDAO.getTeamPlayers(teamDAO.getTeamIdByName("Lakers"));
-        for(Player player : playerList){
-            System.out.println(player.toString());
-        }
+        //TeamDAO teamDAO = new TeamDAO();
+        //PlayerDAO playerDAO = new PlayerDAO();
+        //playerDAO.deletePlayer(6);
     }
 }
