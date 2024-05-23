@@ -6,7 +6,7 @@ public class TeamDAO {
     private static final String user = "CSEbasketball";     
     private static final String password = "junqi525";
     
-    //增加球隊
+   
     public void addTeam(String teamName, String teamCity, int foundationYear) {
         try (Connection conn = DriverManager.getConnection(url, user, password);
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO Teams (name, city, foundation_year) VALUES (?, ?, ?)")) { 
@@ -19,25 +19,31 @@ public class TeamDAO {
         }
     }
 
-    //刪除球隊
-    public void deleteTeam(String teamName){
-        TeamDAO teamDAO = new TeamDAO();
-        int team_id = teamDAO.getTeamIdByName(teamName);
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM Teams Where team_id = ?")) { 
-            stmt.setInt(1, team_id);
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("成功刪除了名字為 " + teamName + " 的球隊");
-            } else {
-                System.out.println("找不到名字為為 " + teamName + " 的球隊");
-            }
-        } catch (SQLException e) {
+    
+    public void deleteTeam(int team_id){
+        try{
+            Connection conn = DriverManager.getConnection(url, user, password);
+            PreparedStatement updatePlayerStmt = conn.prepareStatement("UPDATE Players SET team_id = NULL WHERE team_id = ?");
+            updatePlayerStmt.setInt(1, team_id);
+            updatePlayerStmt.executeUpdate();
+            
+            PreparedStatement updateGamesStmt1 = conn.prepareStatement("UPDATE Games SET team1_id = NULL WHERE team1_id = ?");
+            updateGamesStmt1.setInt(1, team_id);
+            updateGamesStmt1.executeUpdate();
+
+            PreparedStatement updateGamesStmt2 = conn.prepareStatement("UPDATE Games SET team2_id = NULL WHERE team2_id = ?");
+            updateGamesStmt2.setInt(1, team_id);
+            updateGamesStmt2.executeUpdate();
+
+            PreparedStatement deleteTeamStmt = conn.prepareStatement("DELETE FROM Teams Where team_id = ?");
+            deleteTeamStmt.setInt(1, team_id);
+            deleteTeamStmt.executeUpdate();
+        }catch (SQLException e) {
             e.printStackTrace();
         }
     }
     
-    //透過team_id來搜尋球隊
+   
     public Team getTeamInfo(int team_id) {
         Team team = null;
         try (Connection conn = DriverManager.getConnection(url, user, password);
@@ -57,7 +63,7 @@ public class TeamDAO {
         return team;
     }
     
-    //返回一個所有球隊資料的ArrayList
+
     public ArrayList<Team> getAllTeams() {
         ArrayList<Team> teamList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password);
@@ -77,7 +83,7 @@ public class TeamDAO {
         return teamList;
     }
 
-    //透過Team Name獲取team_id
+ 
     public int getTeamIdByName(String teamName) {
         int team_id = -1;
         try (Connection conn = DriverManager.getConnection(url, user, password);
@@ -91,13 +97,5 @@ public class TeamDAO {
             e.printStackTrace();
         }
         return team_id;
-    }
-    public static void main(String[] args) {
-        TeamDAO teamDAO = new TeamDAO();
-        ArrayList<Team> teamlist = teamDAO.getAllTeams();
-        for (Team team : teamlist) {
-            System.out.println(team.toString());
-        }
-
     }
 }
