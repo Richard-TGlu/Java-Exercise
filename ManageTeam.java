@@ -201,16 +201,16 @@ public class ManageTeam extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(teamJList);
-        teamlistPanel.add(scrollPane, BorderLayout.CENTER);
+        inputPanel.add(scrollPane, BorderLayout.CENTER);
 
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(e -> {
             ensure();
         });
 
+        dialog.add(inputPanel, BorderLayout.CENTER);
         dialog.add(deleteButton, BorderLayout.SOUTH);
         dialog.add(inputPanel, BorderLayout.CENTER);
-
         dialog.setVisible(true);
     }
 
