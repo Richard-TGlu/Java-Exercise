@@ -87,6 +87,7 @@ public class SearchGames extends JPanel {
         createGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showCreateDialog.Game(teams);
+                new LoadGamesWorker().execute();
             }
         });
 
@@ -99,7 +100,7 @@ public class SearchGames extends JPanel {
         deleteGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showDeleteDialog.Game(games);
-                updateGameListPanel();
+                new LoadGamesWorker().execute();
             }
         });
         FunctionPanel.add(createGame, BorderLayout.CENTER);
