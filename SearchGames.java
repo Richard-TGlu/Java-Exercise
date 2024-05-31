@@ -224,18 +224,26 @@ public class SearchGames extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    // Implement double-click behavior here
+                    int row = gamesTable.rowAtPoint(e.getPoint());
+                    if (row != -1) {
+                        String homeTeam = gamesTable.getValueAt(row, 1).toString();
+                        String awayTeam = gamesTable.getValueAt(row, 2).toString();
+                        openManageGame(homeTeam, awayTeam);
+                    }
                 }
             }
         });
-
+    
         JScrollPane scrollPane = new JScrollPane(gamesTable);
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
         return tablePanel;
     }
-
+    private void openManageGame(String homeTeam, String awayTeam) {
+        ManageGame manageGame = new ManageGame(homeTeam, awayTeam);
+        manageGame.setVisible(true);
+    }
     private void updateGameListPanel() {
         gameListPanel.removeAll();
         JPanel gameInfoPanel = tablePanel();
