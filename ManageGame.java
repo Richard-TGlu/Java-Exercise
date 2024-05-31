@@ -1,128 +1,68 @@
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
-public class ManageGame extends JPanel {
-
+public class ManageGame extends JFrame {
     private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private JPanel cards;
+    private JPanel homeTeamPanel;
+    private JPanel awayTeamPanel;
     private JPanel playerListPanel;
-    private JPanel loadingPanel;
-    private Game game;
-    private ArrayList<Player> players;
-    private Team team;
-    private PlayerDAO playerDAO;
-    private ArrayList<GameStats> gameStat;
-    private GameStatsDAO gameStatsDAO;
-    private GameDAO gameDAO;
+    private List<GameStats> gameStat;
 
-    public ManageGame(Game game, SearchGames searchGames) {
-        this.game = game;
+    public ManageGame(String homeTeam, String awayTeam) {
+        super("Manage Game");
+        gameStat = new ArrayList<>();
+        initializeUI(homeTeam, awayTeam);
+        setSize(1000, 800);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        pack();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void initializeUI(String homeTeam, String awayTeam) {
         cardLayout = new CardLayout();
-        setLayout(cardLayout);
-        mainPanel = new JPanel(new BorderLayout());
-        loadingPanel = new JPanel(new BorderLayout());
+        cards = new JPanel(cardLayout);
 
-        initializeUI(searchGames);
+        homeTeamPanel = createTeamPanel(homeTeam, "Home Team Stats");
+        cards.add(homeTeamPanel, "Home");
 
-        new LoadPlayersWorker().execute();
+        awayTeamPanel = createTeamPanel(awayTeam, "Away Team Stats");
+        cards.add(awayTeamPanel, "Away");
+
+        getContentPane().add(cards, BorderLayout.CENTER);
+
+        JButton switchButton = new JButton("Switch Team");
+        switchButton.addActionListener(e -> cardLayout.next(cards));
+        getContentPane().add(switchButton, BorderLayout.SOUTH);
     }
 
-    private void initializeUI(SearchGames searchGames) {
-        // Title Panel
-        JPanel titlePanel = new JPanel();
-        titlePanel.setLayout(new BorderLayout());
-        JPanel TeamListPanel = new JPanel();
-        TeamListPanel.setLayout(new BorderLayout());
+    private JPanel createTeamPanel(String teamName, String label) {
+        JPanel teamPanel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel(label + ": " + teamName);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 50));
+        teamPanel.add(titleLabel, BorderLayout.NORTH);
 
-        JButton backToTeamList = new JButton("Game List");
-        backToTeamList.setFont(new Font("Serif", Font.BOLD, 20));
-        backToTeamList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchGames.showGameList();
-            }
-        });
-        JLabel teamNameLabel = new JLabel(team.getName(), JLabel.CENTER);
-        teamNameLabel.setFont(new Font("Serif", Font.BOLD, 40));
-        teamNameLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-        JPanel Date = new JPanel();
-        Date.setLayout(new GridLayout(1, 1, 0, 0));
-        JLabel DateLabel = new JLabel("Game Date:" + game.getGameDate());
-        DateLabel.setFont(new Font("Serif", Font.BOLD, 18));
-        DateLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        teamPanel.add(createPlayerStatsTable(), BorderLayout.CENTER);
 
-        TeamListPanel.add(backToTeamList, BorderLayout.EAST);
-        TeamListPanel.add(DateLabel, BorderLayout.WEST);
-        titlePanel.add(TeamListPanel, BorderLayout.SOUTH);
-        titlePanel.add(teamNameLabel, BorderLayout.CENTER);
-
-        // 這個是用來儲存修改過的資料的Button
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                refreshPlayerList();
-            }
-        });
-
-        // Player List Panel
-        playerListPanel = new JPanel(new BorderLayout());
-
-        mainPanel.add(titlePanel, BorderLayout.NORTH);
-        mainPanel.add(playerListPanel, BorderLayout.CENTER);
-
-        JLabel loadingText = new JLabel("Loading Player Data...", JLabel.CENTER);
-        loadingText.setFont(new Font("Serif", Font.BOLD, 30));
-        loadingPanel.add(loadingText, BorderLayout.CENTER);
-
-        add(mainPanel, "GameList");
-        add(loadingPanel, "loading");
-
-        cardLayout.show(this, "loading");
+        return teamPanel;
     }
 
-    private class LoadPlayersWorker extends SwingWorker<ArrayList<GameStats>, Void> {
-        @Override
-        protected ArrayList<GameStats> doInBackground() throws Exception {
-            gameStatsDAO = new GameStatsDAO();
-            gameDAO = new GameDAO();
-            // 這個條件我不知道要給什麼
-            if(){
-                return gameStatsDAO.getGameStatsByGameAndTeam(game.getGameId(), game.getTeam1Id());
-            }
-            else{
-                return gameStatsDAO.getGameStatsByGameAndTeam(game.getGameId(), game.getTeam2Id());
-            }
+    private JPanel createPlayerStatsTable() {
 
-        }
-
-        @Override
-        protected void done() {
-            try {
-                gameStat = get();
-                displayPlayers();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void displayPlayers() {
-        playerListPanel.removeAll();
-        playerListPanel.add(tablePanel(), BorderLayout.CENTER);
-        cardLayout.show(this, "GameList");
-        revalidate();
-        repaint();
-    }
-
-    // player list table
-    private JPanel tablePanel() {
-        String[] columnNames = { "Name", "PlayingTime", "Points", "Assists", "Steals", "Blocks", "Rebounds",
-                "Turnovers", "FGM", "FGA", "ThreePM", "ThreePA", "FTM", "FTA", "Foul" };
+        String[] columnNames = {
+                "Name", "PlayingTime", "Points", "Assists", "Steals", "Blocks", "Rebounds",
+                "Turnovers", "FGM", "FGA", "ThreePM", "ThreePA", "FTM", "FTA", "Foul"
+        };
         Object[][] data = new Object[gameStat.size()][15];
         PlayerDAO playerDAO = new PlayerDAO();
 
@@ -144,19 +84,20 @@ public class ManageGame extends JPanel {
             data[i][12] = gameStats.getFTM();
             data[i][13] = gameStats.getFTA();
             data[i][14] = gameStats.getFoul();
+
         }
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
-            // 這個是讓所有格子裡的數據可以更改
             @Override
             public boolean isCellEditable(int row, int column) {
                 return true;
+                // 讓所有格子裡的數據可以更改
+
             }
 
             @Override
             public void setValueAt(Object value, int row, int column) {
                 super.setValueAt(value, row, column);
                 // 下面需要你寫一行代碼來更新數據庫
-
             }
         };
 
@@ -170,19 +111,13 @@ public class ManageGame extends JPanel {
         tableHeader.setFont(new Font("Serif", Font.BOLD, 28));
 
         JScrollPane scrollPane = new JScrollPane(playerTable);
-
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
         return tablePanel;
     }
 
-    private void refreshPlayerList() {
-        new LoadPlayersWorker().execute();
+    public void showGameView(String viewName) {
+        cardLayout.show(cards, viewName);
     }
-
-    public Team getTeam() {
-        return team;
-    }
-
 }
