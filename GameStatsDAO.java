@@ -130,4 +130,55 @@ public class GameStatsDAO {
         }
         return teamScore;
     }
+
+    public CareerStats getPlayerCareerStats(int playerId) {
+        CareerStats careerStats = new CareerStats();
+        String sql = "SELECT p.name AS player_name, COUNT(*) AS games_played, SUM(playing_time) AS total_playing_time, " +
+                     "SUM(points) AS total_points, SUM(assists) AS total_assists, " +
+                     "SUM(rebounds) AS total_rebounds, SUM(steals) AS total_steals, " +
+                     "SUM(blocks) AS total_blocks, SUM(turnovers) AS total_turnovers, " +
+                     "SUM(FGM) AS total_FGM, SUM(FGA) AS total_FGA, " +
+                     "SUM(threePM) AS total_threePM, SUM(threePA) AS total_threePA, " +
+                     "SUM(FTM) AS total_FTM, SUM(FTA) AS total_FTA, " +
+                     "SUM(foul) AS total_foul " +
+                     "FROM Game_stats gs " +
+                     "JOIN Players p ON gs.player_id = p.player_id " +
+                     "WHERE gs.player_id = ? AND gs.playing_time > 0";
+        Connection conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, playerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int gamesPlayed = rs.getInt("games_played");
+                if (gamesPlayed > 0) {
+                    careerStats.setPlayerName(rs.getString("player_name"));
+                    careerStats.setPlayingTime(rs.getDouble("total_playing_time") / gamesPlayed);
+                    careerStats.setPoints(rs.getDouble("total_points") / gamesPlayed);
+                    careerStats.setAssists(rs.getDouble("total_assists") / gamesPlayed);
+                    careerStats.setRebounds(rs.getDouble("total_rebounds") / gamesPlayed);
+                    careerStats.setSteals(rs.getDouble("total_steals") / gamesPlayed);
+                    careerStats.setBlocks(rs.getDouble("total_blocks") / gamesPlayed);
+                    careerStats.setTurnovers(rs.getDouble("total_turnovers") / gamesPlayed);
+                    careerStats.setFoul(rs.getDouble("total_foul") / gamesPlayed);
+
+                    // 新增的出手相关数据
+                    careerStats.setFGM(rs.getDouble("total_FGM") / gamesPlayed);
+                    careerStats.setFGA(rs.getDouble("total_FGA") / gamesPlayed);
+                    careerStats.setThreePM(rs.getDouble("total_threePM") / gamesPlayed);
+                    careerStats.setThreePA(rs.getDouble("total_threePA") / gamesPlayed);
+                    careerStats.setFTM(rs.getDouble("total_FTM") / gamesPlayed);
+                    careerStats.setFTA(rs.getDouble("total_FTA") / gamesPlayed);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                connectionPool.releaseConnection(conn);
+            }
+        }
+        return careerStats;
+    }
 }
