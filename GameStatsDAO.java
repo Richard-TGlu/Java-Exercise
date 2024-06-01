@@ -163,7 +163,6 @@ public class GameStatsDAO {
                     careerStats.setTurnovers(rs.getDouble("total_turnovers") / gamesPlayed);
                     careerStats.setFoul(rs.getDouble("total_foul") / gamesPlayed);
 
-                    // 新增的出手相关数据
                     careerStats.setFGM(rs.getDouble("total_FGM") / gamesPlayed);
                     careerStats.setFGA(rs.getDouble("total_FGA") / gamesPlayed);
                     careerStats.setThreePM(rs.getDouble("total_threePM") / gamesPlayed);
