@@ -31,18 +31,6 @@ public class TeamDAO {
         Connection conn = null;
         try {
             conn = connectionPool.getConnection();
-            PreparedStatement updatePlayerStmt = conn.prepareStatement("UPDATE Players SET team_id = NULL WHERE team_id = ?");
-            updatePlayerStmt.setInt(1, team_id);
-            updatePlayerStmt.executeUpdate();
-
-            PreparedStatement updateGamesStmt1 = conn.prepareStatement("UPDATE Games SET team1_id = NULL WHERE team1_id = ?");
-            updateGamesStmt1.setInt(1, team_id);
-            updateGamesStmt1.executeUpdate();
-
-            PreparedStatement updateGamesStmt2 = conn.prepareStatement("UPDATE Games SET team2_id = NULL WHERE team2_id = ?");
-            updateGamesStmt2.setInt(1, team_id);
-            updateGamesStmt2.executeUpdate();
-
             PreparedStatement deleteTeamStmt = conn.prepareStatement("DELETE FROM Teams WHERE team_id = ?");
             deleteTeamStmt.setInt(1, team_id);
             deleteTeamStmt.executeUpdate();
