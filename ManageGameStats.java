@@ -98,7 +98,7 @@ public class ManageGameStats extends JPanel {
     private JPanel createPlayerStatsTable(ArrayList<GameStats> gameStats) {
         String[] columnNames = {
                 "球員名稱", "上場時間(分鐘)", "得分", "助攻", "抄截", "阻攻", "籃板",
-                "失誤", "命中", "三分命中", "罰球", "犯規" };
+                "失誤", "二分命中", "三分命中", "罰球", "犯規" };
         Object[][] data = new Object[gameStats.size()][12];
 
         for (int i = 0; i < gameStats.size(); i++) {
