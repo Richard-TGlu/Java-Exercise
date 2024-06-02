@@ -78,6 +78,14 @@ public class ManageGameStats extends JPanel {
                 manageGame.showGameList();
             }
         });
+        JButton compareButton = new JButton("比較兩隊數據");
+            compareButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showComparisonDialog();
+                }
+            });
+        
+        buttonPanel.add(compareButton, BorderLayout.WEST);
         buttonPanel.add(anotherTeam, BorderLayout.SOUTH);
         buttonPanel.add(backToGameList, BorderLayout.EAST);
         titlePanel.add(titleLabel, BorderLayout.CENTER);
@@ -272,4 +280,120 @@ public class ManageGameStats extends JPanel {
         revalidate();
         repaint();
     }
+
+    public void showComparisonDialog() {
+        JDialog comparisonDialog = new JDialog((Frame) null, "Comparison", true);
+        comparisonDialog.setLayout(new BorderLayout());
+    
+        // Create panel for comparison data
+        JPanel comparisonPanel = new JPanel(new GridLayout(10, 3, 10, 10));
+        comparisonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+        // Add headers
+        comparisonPanel.add(createCenteredLabel("Stat"));
+        comparisonPanel.add(createCenteredLabel(homeTeam.getName()));
+        comparisonPanel.add(createCenteredLabel(awayTeam.getName()));
+    
+        // Add comparison data
+        comparisonPanel.add(createCenteredLabel("得分"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumPoints(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumPoints(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("助攻"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumAssists(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumAssists(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("抄截"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumSteals(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumSteals(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("阻攻"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumBlocks(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumBlocks(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("籃板"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumRebounds(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumRebounds(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("失誤"));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumTurnovers(homeTeamStats))));
+        comparisonPanel.add(createCenteredLabel(String.valueOf(sumTurnovers(awayTeamStats))));
+    
+        comparisonPanel.add(createCenteredLabel("兩分命中數"));
+        comparisonPanel.add(createCenteredLabel(sumTwoPM(homeTeamStats)));
+        comparisonPanel.add(createCenteredLabel(sumTwoPM(awayTeamStats)));
+    
+        comparisonPanel.add(createCenteredLabel("三分命中數"));
+        comparisonPanel.add(createCenteredLabel(sumThreePMAndThreePA(homeTeamStats)));
+        comparisonPanel.add(createCenteredLabel(sumThreePMAndThreePA(awayTeamStats)));
+    
+        comparisonPanel.add(createCenteredLabel("罰球命中數"));
+        comparisonPanel.add(createCenteredLabel(sumFTMAndFTA(homeTeamStats)));
+        comparisonPanel.add(createCenteredLabel(sumFTMAndFTA(awayTeamStats)));
+    
+        comparisonDialog.add(comparisonPanel, BorderLayout.CENTER);
+    
+        // Add a close button
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> comparisonDialog.dispose());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(closeButton);
+        comparisonDialog.add(buttonPanel, BorderLayout.SOUTH);
+    
+        comparisonDialog.pack();
+        comparisonDialog.setLocationRelativeTo(null);
+        comparisonDialog.setVisible(true);
+    }
+    
+    private JLabel createCenteredLabel(String text) {
+        JLabel label = new JLabel(text, JLabel.CENTER);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setFont(new Font("Serif", Font.BOLD, 20));
+        return label;
+    }
+    
+    private int sumPoints(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getPoints).sum();
+    }
+    
+    private int sumAssists(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getAssists).sum();
+    }
+    
+    private int sumSteals(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getSteals).sum();
+    }
+    
+    private int sumBlocks(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getBlocks).sum();
+    }
+    
+    private int sumRebounds(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getRebounds).sum();
+    }
+    
+    private int sumTurnovers(ArrayList<GameStats> stats) {
+        return stats.stream().mapToInt(GameStats::getTurnovers).sum();
+    }
+      
+    private String sumTwoPM(ArrayList<GameStats> stats) {
+        int fgm = stats.stream().mapToInt(GameStats::getFGM).sum();
+        int fga = stats.stream().mapToInt(GameStats::getFGA).sum();
+        int threePm = stats.stream().mapToInt(GameStats::getThreePM).sum();
+        int threePa = stats.stream().mapToInt(GameStats::getThreePA).sum();
+        return (fgm - threePm) + "/" + (fga - threePa);
+    }
+    
+    private String sumThreePMAndThreePA(ArrayList<GameStats> stats) {
+        int threePm = stats.stream().mapToInt(GameStats::getThreePM).sum();
+        int threePa = stats.stream().mapToInt(GameStats::getThreePA).sum();
+        return threePm + "/" + threePa;
+    }
+    
+    private String sumFTMAndFTA(ArrayList<GameStats> stats) {
+        int ftm = stats.stream().mapToInt(GameStats::getFTM).sum();
+        int fta = stats.stream().mapToInt(GameStats::getFTA).sum();
+        return ftm + "/" + fta;
+    }
 }
+    
