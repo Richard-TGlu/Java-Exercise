@@ -1,3 +1,5 @@
+package basketball.app;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -58,9 +60,18 @@ public class ManageGameStats extends JPanel {
         JPanel teamPanel = new JPanel(new BorderLayout());
         
         JPanel titlePanel = new JPanel(new BorderLayout());
-        JLabel titleLabel = new JLabel(team.toString(), JLabel.CENTER);
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        JLabel titleLabel = new JLabel(game.toString(), JLabel.CENTER);
+        JLabel teamNameLabel = new JLabel();
+        if (team == homeTeam) {
+            teamNameLabel.setText("(HomeTeam) " + team.toString());
+            teamNameLabel.setHorizontalAlignment(JLabel.CENTER);
+        } else {
+            teamNameLabel.setText("(AwayTeam) " + team.toString());
+            teamNameLabel.setHorizontalAlignment(JLabel.CENTER);
+        }
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 20));
+        teamNameLabel.setFont(new Font("Serif", Font.BOLD, 32));
+        //titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         JPanel buttonPanel = new JPanel(new BorderLayout());
         JButton anotherTeam = new JButton("Another Team");
         anotherTeam.addActionListener(new ActionListener() {
@@ -88,7 +99,8 @@ public class ManageGameStats extends JPanel {
         buttonPanel.add(compareButton, BorderLayout.WEST);
         buttonPanel.add(anotherTeam, BorderLayout.SOUTH);
         buttonPanel.add(backToGameList, BorderLayout.EAST);
-        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        titlePanel.add(titleLabel, BorderLayout.NORTH);
+        titlePanel.add(teamNameLabel, BorderLayout.CENTER);
         titlePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         if(team == homeTeam){
